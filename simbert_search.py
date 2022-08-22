@@ -13,9 +13,15 @@ max_len = 64
 
 # simbert配置
 simbert_model_path = "/root/simbert/"
-config_path = simbert_model_path + '/chinese_simbert_L-12_H-768_A-12/bert_config.json'
-checkpoint_path = simbert_model_path + '/chinese_simbert_L-12_H-768_A-12/bert_model.ckpt'
-dict_path = simbert_model_path + '/chinese_simbert_L-12_H-768_A-12/vocab.txt'
+config_path = (
+    f'{simbert_model_path}/chinese_simbert_L-12_H-768_A-12/bert_config.json'
+)
+
+checkpoint_path = (
+    f'{simbert_model_path}/chinese_simbert_L-12_H-768_A-12/bert_model.ckpt'
+)
+
+dict_path = f'{simbert_model_path}/chinese_simbert_L-12_H-768_A-12/vocab.txt'
 
 class data_generator(DataGenerator):
     '''新的迭代器，注意这里得到dict_path没有定义，需要外部定义'''
@@ -33,8 +39,7 @@ class data_generator(DataGenerator):
                 batch_token_ids, batch_segment_ids = [], []
     def forpred(self, random=False):
         while True:
-            for d in self.__iter__(random):
-                yield d
+            yield from self.__iter__(random)
 
 def buildSimbertEncoder():
     '''构建simbert的encoder'''
@@ -56,7 +61,7 @@ def setIndex(dim, index_param):
     """
     设置faiss的index
     """
-    if index_param[0:4] == 'HNSW' and ',' not in index_param:
+    if index_param[:4] == 'HNSW' and ',' not in index_param:
         hnsw_num = int(index_param.split('HNSW')[-1])
         print(f'Index维度为{dim}，HNSW参数为{hnsw_num}')
         index = faiss.IndexHNSWFlat(dim, hnsw_num, faiss.METRIC_INNER_PRODUCT)
